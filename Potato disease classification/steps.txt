@@ -1,0 +1,7 @@
+1.load datset to tensorflow(plantvillage dataset from kaggle) 
+pipeline(image_datset_from_directory)
+2.make subplots and check out the images from 1 batch
+3.split into train,test,val with pretech and cache
+4.create a resize_rescale layer
+5.data_sugmentation layer
+6.prepare model
