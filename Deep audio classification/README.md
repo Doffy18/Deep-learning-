@@ -20,7 +20,8 @@ matplotlib
 scikit-learn
 seaborn
 tensorflow/keras (if using deep learning models)
-Usage
+
+# Usage
 Notebook
 Clone this repository or download the audio.ipynb notebook.
 Place your audio dataset in the appropriate directory.
@@ -37,9 +38,11 @@ The notebook generates:
 Feature matrices for modeling.
 Classification model predictions and performance metrics.
 Visualizations of audio characteristics.
-Notes
+
+# Notes
 Adjust preprocessing parameters to match the characteristics of your dataset.
 Experiment with different models to improve classification accuracy.
-Acknowledgments
+
+# Acknowledgments
 This project integrates audio signal processing and machine learning techniques to deliver a robust pipeline for audio classification.
 
