@@ -1,0 +1,289 @@
+1.we defined the path to the fils using os
+2.now we define a function to read the audio file
+ -Loading the encoded WAV file:
+
+file_contents = tf.io.read_file(filename)
+This line reads the raw data from the audio file using TensorFlow's tf.io.read_file() function. The file content is still in a binary format at this point.
+Decoding the WAV file:
+
+wav, sample_rate = tf.audio.decode_wav(file_contents, desired_channels=1)
+tf.audio.decode_wav() decodes the binary file content into a tensor representing the audio signal. The audio is decoded into a 1-channel (mono) waveform, even if the original file had multiple channels.
+The function returns two things:
+wav: A tensor that contains the audio signal. Each element corresponds to the amplitude of the sound at a given time step.
+sample_rate: The rate at which the audio was originally recorded (e.g., 44.1kHz).
+Removing the trailing axis:
+
+
+wav = tf.squeeze(wav, axis=-1)
+The audio tensor may have an unnecessary dimension for channels (since it's mono, it only has one channel). tf.squeeze() removes this extra dimension (axis=-1 refers to the last axis).
+Casting the sample rate:
+
+sample_rate = tf.cast(sample_rate, dtype=tf.int64)
+The sample rate is converted to the int64 data type. This is a precaution to ensure compatibility with further operations.
+Resampling the audio to 16kHz:
+
+
+wav = tfio.audio.resample(wav, rate_in=sample_rate, rate_out=16000)
+The original audio might be recorded at a higher sample rate (e.g., 44.1kHz or 48kHz). For many audio classification tasks, models expect a lower and standardized sample rate (like 16kHz). This line uses TensorFlow I/O's tfio.audio.resample() function to resample the audio signal from its original sample rate (rate_in) to 16kHz (rate_out).
+Returning the processed waveform:
+
+return wav
+The processed and resampled waveform is returned as a tensor. The audio is now in 16kHz mono format, ready to be used for further processing or as input for a model.
+
+------------note------------------
+A "sample" in audio refers to a tiny snapshot of the sound at a particular moment. When sound is recorded digitally, it's broken up into thousands of these snapshots every second. The more samples taken per second, the higher the quality of the sound.
+For example:
+44,100 samples per second (44.1 kHz) is the standard for CD-quality audio.
+16,000 samples per second (16 kHz) is a lower rate often used for voice recordings, as it's enough for clear speech but reduces the file size.
+In this case, the function is converting the audio from a higher sample rate (like 44,100) down to 16,000 samples per second, which still sounds good for things like speech but uses less data.
+
+You said:
+snapshot mean?
+ChatGPT said:
+A "snapshot" in this context is like taking a quick picture, but instead of capturing an image, you're capturing the sound at a very specific moment.
+When sound is recorded, it's constantly changing. By taking many snapshots (or samples) every second, you can capture the details of the sound. Each snapshot represents the loudness or intensity of the sound at that exact point in time.
+If you take enough snapshots in quick succession, you can piece them together to recreate the original sound when played back.
+
+You said:
+how taking image increases quality of sound
+ChatGPT
+Taking more "snapshots" (samples) per second increases the quality of sound because it captures more detail. Here's an analogy:
+Imagine you're drawing a curve on a graph. If you take only a few points (snapshots) along the curve, the result will be rough and not very accurate. But if you take many points very close together, you can trace the curve much more smoothly and accurately.
+In sound, this curve represents how the sound wave changes over time. By taking more samples per second (a higher sample rate), you capture more precise information about the sound. This makes the playback smoother and more detailed, especially for high-pitched sounds or complex audio like music.
+However, beyond a certain point, increasing the number of samples doesn’t make much noticeable difference to our ears, which is why 44,100 samples per second (44.1 kHz) is often used for music, and 16,000 (16 kHz) is enough for voice recordings.
+--------------------------------------------------------------------------------------------------------------
+Loading the Capuchinbird audio file:
+
+
+wave = load_wav_16k_mono(CAPUCHIN_FILE)
+CAPUCHIN_FILE is the file path to an audio clip of a Capuchinbird.
+The function load_wav_16k_mono() processes this file, resampling it to 16kHz and converting it to a mono waveform.
+The result is stored in the variable wave, which holds the audio data as a tensor of amplitudes, ready to be used in further processing (e.g., for audio classification).
+Loading the non-Capuchinbird audio file:
+
+
+nwave = load_wav_16k_mono(NOT_CAPUCHIN_FILE)
+NOT_CAPUCHIN_FILE is the file path to an audio clip that does not contain Capuchinbird sounds (e.g., general bird sounds or environmental noise).
+Similar to the first line, the function processes this file, resampling it to 16kHz mono, and the result is stored in the variable nwave.
+-------------------------------------------------------------------------
+
+These two lines are defining the file paths to directories that contain audio files for two different categories (positive and negative examples) in your dataset:
+
+POS = os.path.join('data', 'Parsed_Capuchinbird_Clips')
+POS is the variable that holds the file path to the directory containing Capuchinbird audio clips (positive examples).
+The function os.path.join() is used to safely concatenate directory names or file paths across different operating systems.
+This creates a path to a folder named Parsed_Capuchinbird_Clips inside a parent directory called data. This folder likely contains audio clips of Capuchinbird sounds that are used for training or testing your model.
+NEG:
+
+
+NEG = os.path.join('data', 'Parsed_Not_Capuchinbird_Clips')
+NEG is the variable that holds the file path to the directory containing non-Capuchinbird audio clips (negative examples).
+This path leads to the folder Parsed_Not_Capuchinbird_Clips inside the data directory. It likely contains audio files that do not contain Capuchinbird sounds, such as other bird species or background noise.
+
+==============================================================================
+Creating a dataset for positive examples:
+pos = tf.data.Dataset.list_files(POS + '\*.wav')
+POS is the path to the directory containing Capuchinbird audio clips (positive examples).
+tf.data.Dataset.list_files() creates a TensorFlow dataset from all files in the POS directory that have the .wav extension (audio files).
+The pattern '*.wav' means that it will list all files ending in .wav in the POS directory.
+Result: pos is a TensorFlow Dataset object that holds a collection of file paths pointing to the .wav files in the Capuchinbird clips directory.
+
+Creating a dataset for negative examples:
+neg = tf.data.Dataset.list_files(NEG + '\*.wav')
+NEG is the path to the directory containing non-Capuchinbird audio clips (negative examples).
+Similar to the previous line, tf.data.Dataset.list_files() lists all .wav files in the NEG directory.
+Result: neg is another TensorFlow Dataset object containing the file paths to .wav files in the non-Capuchinbird clips directory.
+
+=======================================================================================
+These lines are combining the positive and negative datasets to create a labeled dataset where:
+
+Positive examples are labeled as 1.
+Negative examples are labeled as 0.
+Here’s a breakdown of each part:
+
+Creating the positives dataset:
+positives = tf.data.Dataset.zip((pos, tf.data.Dataset.from_tensor_slices(tf.ones(len(pos)))))
+pos contains the dataset of file paths to positive examples (Capuchinbird audio clips).
+tf.ones(len(pos)) creates a tensor of ones, with the same length as the pos dataset. This tensor represents the labels for the positive examples (since 1 indicates a positive label).
+tf.data.Dataset.from_tensor_slices() converts this tensor of ones into a TensorFlow dataset.
+tf.data.Dataset.zip() combines the dataset of audio file paths (pos) and the dataset of labels (ones) into pairs. Each pair consists of a file path and the label 1.
+Result: positives is a dataset where each element is a tuple (file_path, 1), representing a Capuchinbird sound and its label.
+
+
+Creating the negatives dataset:
+negatives = tf.data.Dataset.zip((neg, tf.data.Dataset.from_tensor_slices(tf.zeros(len(neg)))))
+neg contains the dataset of file paths to negative examples (non-Capuchinbird audio clips).
+tf.zeros(len(neg)) creates a tensor of zeros with the same length as the neg dataset. This tensor represents the labels for the negative examples (since 0 indicates a negative label).
+Similarly, tf.data.Dataset.from_tensor_slices() converts this tensor of zeros into a dataset.
+tf.data.Dataset.zip() pairs each file path in neg with a label of 0.
+Result: negatives is a dataset where each element is a tuple (file_path, 0), representing a non-Capuchinbird sound and its label.
+
+=======================================================================================
+Initializing an empty list:
+
+lengths = []
+This creates an empty list called lengths that will store the lengths of each audio tensor.
+Iterating through files:
+
+for file in os.listdir(os.path.join('data', 'Parsed_Capuchinbird_Clips')):
+os.listdir() lists all files in the specified directory. The loop goes through each file in the Parsed_Capuchinbird_Clips folder.
+
+Loading and processing each audio file:
+tensor_wave = load_wav_16k_mono(os.path.join('data', 'Parsed_Capuchinbird_Clips', file))
+For each file, it constructs the full file path and calls the load_wav_16k_mono() function to load and process the audio. The result is stored in tensor_wave, which is a tensor representing the audio waveform.
+
+Appending the length of the tensor:
+lengths.append(len(tensor_wave))
+The len(tensor_wave) gives the number of samples in the tensor, which corresponds to the length of the audio in terms of the number of 16kHz samples. This length is then added to the lengths list.
+=================================================================================================
+
+Loading the audio waveform:
+
+wav = load_wav_16k_mono(file_path)
+This line calls the load_wav_16k_mono() function to load the audio file specified by file_path, returning a tensor wav that contains the processed audio signal.
+
+Truncating the waveform:
+wav = wav[:48000]
+This line truncates the waveform to the first 48,000 samples (which corresponds to 3 seconds of audio at a 16 kHz sample rate). If the audio clip is shorter than 48,000 samples, this will simply keep whatever samples are available.
+
+Zero-padding the waveform:
+zero_padding = tf.zeros([48000] - tf.shape(wav), dtype=tf.float32)
+wav = tf.concat([zero_padding, wav], 0)
+tf.shape(wav) gives the shape of the tensor, and 48000 - tf.shape(wav) calculates how much padding is needed to make the waveform 48,000 samples long.
+tf.zeros() creates a tensor of zeros with the calculated shape.
+tf.concat() combines the zero padding and the original waveform along the first axis, ensuring that the final tensor has exactly 48,000 samples.
+
+Computing the Short-Time Fourier Transform (STFT):
+spectrogram = tf.signal.stft(wav, frame_length=320, frame_step=32)
+This line computes the STFT of the zero-padded waveform. The STFT breaks the audio signal into overlapping segments (frames) and computes the Fourier transform for each segment, allowing you to analyze the frequency content over time.
+
+Taking the absolute value:
+spectrogram = tf.abs(spectrogram)
+The absolute value of the complex STFT output is taken to get the magnitude spectrogram, which represents the intensity of different frequencies.
+Expanding dimensions:
+
+spectrogram = tf.expand_dims(spectrogram, axis=2)
+This adds an additional dimension to the spectrogram tensor, which can be useful for feeding it into a convolutional neural network (CNN) as it expects 3D inputs (height, width, channels).
+
+Returning the processed data:
+return spectrogram, label
+Finally, the function returns the processed spectrogram along with the corresponding label. This will be useful for training or evaluating a model that classifies audio clips.
+======================================================================================
+Loading the MP3 file:
+
+res = tfio.audio.AudioIOTensor(filename)
+This line uses TensorFlow I/O to load the MP3 file specified by filename. AudioIOTensor reads the audio file and prepares it for further processing.
+
+Converting to tensor and combining channels:
+tensor = res.to_tensor()
+tensor = tf.math.reduce_sum(tensor, axis=1) / 2 
+res.to_tensor() converts the audio data into a tensor.
+The second line sums the audio channels (if there are multiple) along the first axis (the channel axis) and divides by 2 to average them, effectively converting the audio to a single-channel (mono) format.
+
+Extracting and casting the sample rate:
+sample_rate = res.rate
+sample_rate = tf.cast(sample_rate, dtype=tf.int64)
+This retrieves the original sample rate of the audio file (e.g., 44.1 kHz) and casts it to the int64 data type for compatibility with other operations.
+
+Resampling to 16 kHz:
+wav = tfio.audio.resample(tensor, rate_in=sample_rate, rate_out=16000)
+This line resamples the audio tensor from its original sample rate (rate_in) to 16 kHz (rate_out) using TensorFlow I/O’s resampling function. This is important for ensuring that all audio inputs to a model are at the same sample rate.
+
+Returning the processed waveform:
+return wav
+Finally, the function returns the resampled mono waveform as a tensor.
+
+=============================================================================================
+
+Extracting the sample:
+sample = sample[0]
+This line takes the first element from the sample input, which is expected to be a batch of samples (tuples of (audio, label)). It selects the audio part of the tuple.
+
+Zero-padding the waveform:
+zero_padding = tf.zeros([48000] - tf.shape(sample), dtype=tf.float32)
+wav = tf.concat([zero_padding, sample], 0)
+Similar to previous examples, this creates a tensor of zeros to pad the audio sample to ensure it has exactly 48,000 samples (3 seconds).
+The tf.concat() function combines the zero padding with the original audio sample, ensuring the final tensor has a length of 48,000 samples.
+Computing the Short-Time Fourier Transform (STFT):
+
+spectrogram = tf.signal.stft(wav, frame_length=320, frame_step=32)
+This line computes the STFT of the zero-padded waveform. The STFT helps analyze the frequency content of the audio signal over time by breaking it into overlapping frames.
+
+Taking the absolute value:
+spectrogram = tf.abs(spectrogram)
+The absolute value is taken to obtain the magnitude spectrogram, which represents how strong each frequency is at each time step.
+
+Expanding dimensions:
+spectrogram = tf.expand_dims(spectrogram, axis=2)
+This adds a new dimension to the spectrogram tensor. This is often necessary for feeding the data into models that expect inputs with a specific shape (like convolutional neural networks).
+
+Returning the processed spectrogram:
+return spectrogram
+The function returns the processed spectrogram, ready for further use in a model.
+
+Summary:
+The preprocess_mp3 function converts an audio sample from an MP3 file into a fixed-length spectrogram representation, ensuring that the input is consistent in size (48,000 samples). This is useful for tasks like classification or recognition where a standard input shape is required.
+===========================================================================================
+Creating Time-Series Dataset:
+audio_slices = tf.keras.utils.timeseries_dataset_from_array(
+    wav, wav, sequence_length=16000, sequence_stride=16000, batch_size=1
+)
+
+Here, timeseries_dataset_from_array is used to create a dataset from the wav tensor, which contains audio data.
+sequence_length=16000 means each slice will be 1 second long (since 16 kHz means 16,000 samples per second).
+sequence_stride=16000 specifies that each slice starts immediately after the previous one ends, resulting in non-overlapping slices.
+batch_size=1 indicates that each batch will contain one audio slice.
+
+Mapping the Preprocessing Function:
+audio_slices = audio_slices.map(preprocess_mp3)
+This line applies the preprocess_mp3 function to each slice in the audio_slices dataset.
+Each audio slice will be processed into a spectrogram format. The preprocess_mp3 function takes care of zero-padding and converting the audio slice into a spectrogram.
+
+Batching the Processed Data:
+audio_slices = audio_slices.batch(64)
+Finally, this line batches the processed spectrograms into groups of 64. This means that during training or evaluation, the model will receive 64 spectrograms at once, which can improve computational efficiency and take advantage of GPU acceleration.
+Summary:
+In summary, this code creates a dataset of 1-second audio slices, processes each slice into a spectrogram, and then groups the processed slices into batches of 64. This setup is commonly used when training models for audio classification or other machine learning tasks involving audio data.
+========================================================================================
+Initializing Results Dictionary:
+
+
+results = {}
+An empty dictionary called results is created to store the predictions for each audio file.
+Iterating Over Files:
+
+for file in os.listdir(os.path.join('data', 'Forest Recordings')):
+    FILEPATH = os.path.join('data','Forest Recordings', file)
+This loop goes through each file in the "Forest Recordings" directory. For each file, it constructs the full file path (FILEPATH).
+Loading the Audio File:
+
+
+wav = load_mp3_16k_mono(FILEPATH)
+The audio file is loaded and processed using the load_mp3_16k_mono function, which converts it to a 16 kHz mono waveform.
+Creating Time-Series Dataset:
+
+
+audio_slices = tf.keras.utils.timeseries_dataset_from_array(wav, wav, sequence_length=48000, sequence_stride=48000, batch_size=1)
+A dataset of 3-second (48,000 samples) audio slices is created from the waveform. Each slice will be a separate input to the model.
+Mapping the Preprocessing Function:
+
+
+audio_slices = audio_slices.map(preprocess_mp3)
+The preprocess_mp3 function is applied to each audio slice to convert them into spectrograms, preparing the data for the model.
+Batching the Processed Data:
+
+
+audio_slices = audio_slices.batch(64)
+The processed audio slices are batched into groups of 64 for efficient prediction.
+Making Predictions:
+
+yhat = model.predict(audio_slices)
+The model predicts the outputs for the batched audio slices. yhat will contain the predictions for these slices.
+Storing Results:
+
+
+results[file] = yhat
+The predictions for each file are stored in the results dictionary, where the key is the filename and the value is the corresponding predictions.
+Summary:
+This code processes each audio file in the specified directory, creating batches of spectrograms, and uses a machine learning model to predict outputs for those audio clips. The predictions are stored in a dictionary for later analysis or use.
+=========================================================================================
