@@ -1,0 +1,9 @@
+1.take dataset from Kaggle or use open images datasetv7
+2.use online data annotation tool called cvat(optional if data is not annotated aftr download from above source)and download image ,and label in yolov1 format.
+3.arrange the folders in this order
+data-
+	a)images->train
+	b)labels->train
+no other name will be recognized by yolo
+refer images
+4.use yolo to train from that. refer code.
