@@ -64,4 +64,3 @@ This project integrates computer vision and agriculture, helping farmers detect 
 
 ---
 
-Let me know if this needs further refinement!
