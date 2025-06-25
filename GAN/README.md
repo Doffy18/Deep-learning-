@@ -57,4 +57,3 @@ This project demonstrates the power of GANs for data generation, making it a val
 
 ---
 
-Let me know if you'd like to make further adjustments!
