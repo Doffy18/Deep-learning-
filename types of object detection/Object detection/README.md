@@ -67,4 +67,3 @@ This project implements the state-of-the-art YOLO algorithm for efficient and ac
 
 ---
 
-Let me know if you need further adjustments!
