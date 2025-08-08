@@ -15,8 +15,8 @@ from transformers import BitsAndBytesConfig
 bnb_config = BitsAndBytesConfig(
     load_in_4bit=True,
     bnb_4bit_use_double_quant=True,
-    bnb_4bit_compute_dtype=torch.float16,  # use float16 for efficiency
-    bnb_4bit_quant_type="nf4"               # better accuracy than 'fp4'
+    bnb_4bit_compute_dtype=torch.float16,  
+    bnb_4bit_quant_type="nf4"               
 )
 os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "expandable_segments:True"
 
@@ -31,7 +31,6 @@ llm = HuggingFacePipeline(pipeline=pipe,model_kwargs={
     })
 
 
-# Define the custom prompt to reduce hallucination
 custom_prompt = PromptTemplate(
     input_variables=["context", "question"],
     template="""Use the following pieces of context to answer the question at the end.
