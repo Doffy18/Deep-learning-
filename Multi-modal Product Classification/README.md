@@ -74,6 +74,15 @@ We switched to a **two-phase pipeline**:
 | **eval_samples/sec**| 1775    | Extremely high throughput |
 | **eval_steps/sec**  | 221     | Fast batch processing |
 
+
+---
+
+## 🌐 Streamlit Web App
+An **interactive Streamlit application** was developed to make the model accessible through a user-friendly interface:  
+- Users can **upload product images** and **enter product descriptions** to get real-time category predictions.  
+- The app processes inputs, retrieves **precomputed embeddings**, fuses them, and displays predictions instantly.  
+
+
 ---
 
 ## 🚀 Future Improvements
