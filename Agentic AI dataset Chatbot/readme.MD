@@ -66,3 +66,4 @@ The project requires the following Python libraries:
 - `python-dotenv`
 - `streamlit` (for web deployment)
 - `typing_extensions`
+- `model used- llama-3.1-8b-instant`
