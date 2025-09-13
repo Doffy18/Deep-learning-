@@ -1,10 +1,11 @@
 # Agentic AI Dataset Chatbot
 
-This is an **Agentic AI-powered Dataset Chatbot** that can automatically clean datasets, provide insights, and assist with various dataset-related tasks. It is designed to make data preprocessing easier and interactive using a chat interface.
+This is a **narrow-scope Agentic AI-powered Dataset Chatbot** that can automatically clean datasets, provide insights, and assist with various dataset-related tasks. While it operates autonomously within its domain, its primary goal is to simplify data preprocessing through interactive guidance and tool usage.
+
+The chatbot can decide which actions to take (e.g., cleaning, summarizing, or displaying dataset stats) based on user input, maintain state across the conversation, and call tools dynamically to achieve its objectives. This makes it an **agentic AI in a limited, domain-specific sense**.
 
 The project is deployed as a **Streamlit web app**, allowing you to upload datasets and interact with the chatbot directly from your browser.
 
----
 
 ## Features
 
