@@ -70,7 +70,7 @@ def auto_clean(df_json: str, dataset_path: str, cleaning_history: list = None) -
             df[col].fillna(mode_value, inplace=True)
 
 
-    # Apply AutoClean on top of the filled/duplicates removed DataFrame (if you want extra cleaning)
+    # Apply AutoClean 
     cleaner = AutoClean(df, mode="auto")
     cleaned_df = cleaner.output
 
@@ -220,3 +220,4 @@ if __name__ == "__main__":
         state["messages"] = []
         
     # ============================================================================================================
+
