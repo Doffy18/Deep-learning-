@@ -208,7 +208,7 @@ if __name__ == "__main__":
     while True:
         user_input = input("User: ").strip()
         if user_input.lower() in ["exit", "end"]:
-            print("Exiting chatbot. All done ✅")
+            print("Exiting chatbot. All done")
             break
 
         state["messages"].append(HumanMessage(content=user_input))
@@ -220,4 +220,5 @@ if __name__ == "__main__":
         state["messages"] = []
         
     # ============================================================================================================
+
 
