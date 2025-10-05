@@ -106,7 +106,7 @@ if uploaded_file:
     # Dataset cleaning button
     if st.button("Clean Dataset In-Memory"):
         cleaned_df = clean_in_memory(pd.read_json(state["df_json"]))
-        st.success("Dataset cleaned in-memory ✅")
+        st.success("Dataset cleaned in-memory ")
 
         # Download cleaned dataset
         buffer = BytesIO()
@@ -123,3 +123,4 @@ else:
     st.warning("Please upload a CSV file to start chatting with the bot.")
     st.session_state['state'] = None
     st.session_state['uploaded_name'] = None
+
