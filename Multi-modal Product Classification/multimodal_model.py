@@ -38,7 +38,7 @@ def compute_metrics(eval_pred):
 # Tokenizer is used for Trainer compatibility
 tokenizer = DistilBertTokenizerFast.from_pretrained("distilbert-base-uncased")
 
-# ------------------- TRAINING SCRIPT (only runs if executed directly) -------------------
+#  TRAINING SCRIPT (only runs if executed directly) 
 if __name__ == "__main__":
     # Load datasets
     train_dataset = CachedMultimodalDataset("train_embeddings.pt")
@@ -52,10 +52,10 @@ if __name__ == "__main__":
 
     model = MultimodalClassifier(num_labels=num_labels)
 
-    # Training arguments — use `eval_strategy` for compatibility
+    # Training arguments
     args = TrainingArguments(
         output_dir="./results",
-        eval_strategy="epoch",  # changed from evaluation_strategy to eval_strategy
+        eval_strategy="epoch",  # changed from evaluation_strategy to eval_strategy in new versions
         save_strategy="epoch",
         per_device_train_batch_size=8,
         per_device_eval_batch_size=8,
