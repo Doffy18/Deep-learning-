@@ -238,7 +238,7 @@ cd GitHub_Codebase_RAG_Assistant
 ```bash
 docker build -t codebase-rag .
 ```
-This command builds the container image using the Dockerfile.
+ command builds the container image using the Dockerfile, name is your choice, but be sure to have it when you run the container.
 ---
 ## 3. Run the Docker Container
 ```bash
