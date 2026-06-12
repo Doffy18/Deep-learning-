@@ -89,7 +89,6 @@ def start_email_agent(thread_id: str, prompt: str):
         ]
     }
     
-    # Run the graph stream block synchronously until it hits an interrupt or ends
     events = graph_m.stream(initial_input, config, stream_mode="updates")
     return process_stream_until_paused(events, config)
 
@@ -99,21 +98,17 @@ def resume_email_agent(thread_id: str, human_input: str):
     config = {"configurable": {"thread_id": thread_id}}
     human_feedback = {"data": human_input}
     
-    # Wake up the graph using Command(resume=...)
     events = graph_m.stream(Command(resume=human_feedback), config, stream_mode="updates")
     return process_stream_until_paused(events, config)
 
 
 def process_stream_until_paused(events, config) -> dict:
     """Helper utility to consume stream events and format a clean API response."""
-    # Consume the generator fully
     for event in events:
         pass 
         
-    # Inspect the exact frozen state after processing stops
     current_state = graph_m.get_state(config)
     
-    # 💡 FIX HERE: Check for your new node name 'clarification' instead of 'tools'
     if current_state.next and "clarification" in current_state.next:
         if current_state.tasks and current_state.tasks[0].interrupts:
             pending_draft = current_state.tasks[0].interrupts[0].value['query']
@@ -123,7 +118,6 @@ def process_stream_until_paused(events, config) -> dict:
                 "draft": pending_draft
             }
             
-    # Scenario B: Graph resolved completely (Email sent!)
     return {
         "status": "completed",
         "thread_id": config["configurable"]["thread_id"],
