@@ -79,8 +79,26 @@ Conversely, completely hands-off AI email scripts are prone to hallucinations, i
 4. **Human Evaluation Verification:** The UI locks until the operator interacts.
 * If the user types modifications, the app passes feedback to `/agent/resume`, returning execution to the `llm_tool` node to rewrite the draft.
 * If the user authorizes approval (*"ok", "looks good", "send"*), the agent bypasses the review node, shifts context execution tracking, and triggers the secure `send_email_tool` utility.
+---
 
+* Where to Get Your SMTP Credentials *
 
+Step 1: Create or pick a Gmail account
+Use a personal email or set up a quick, free burner account (e.g., mycoolagent123@gmail.com). This will be the sender address.
+
+Step 2: Turn on 2-Step Verification
+Google will block standard Python scripts from logging in with your normal password for security reasons.
+Go to your Google Account settings (myaccount.google.com).
+Click on Security on the left menu.
+Under How you sign in to Google, turn on 2-Step Verification if it isn’t already.
+
+Step 3: Generate an "App Password"
+This is the secret key your Python code will use.
+Once 2-Step Verification is on, search the search bar at the top of your Google Account page for "App passwords".
+Give it a name (like Email Agent Project).
+Click Create.
+
+Google will display a 16-character password (e.g., abcd efgh ijkl mnop). Copy this immediately! You won't see it again.
 
 ---
 
@@ -109,6 +127,18 @@ Once your execution log outputs establish connection streams, initialize the wor
 * **Interactive OpenAPI Backend Documentation:** `http://localhost:8000/docs`
 
 ---
+
+<img width="1305" height="878" alt="Screenshot 2026-06-12 185927" src="https://github.com/user-attachments/assets/33e5328e-85f0-43af-910c-0da868a31a65" />
+
+you can see an issue with the regards, we can correct itin the modification section:
+
+<img width="1573" height="965" alt="Screenshot 2026-06-12 190007" src="https://github.com/user-attachments/assets/cce69a51-a9d1-47f1-973e-64f6036097ef" />
+
+<img width="1443" height="187" alt="Screenshot 2026-06-12 190018" src="https://github.com/user-attachments/assets/31ccda3e-05de-4271-8689-0ea6a6f14440" />
+
+email received:
+<img width="1502" height="426" alt="Screenshot 2026-06-12 190322" src="https://github.com/user-attachments/assets/8a1e0cd1-4137-492a-952c-dab18fe352bb" />
+
 
 ## 🎓 Core Learning Outcomes
 
