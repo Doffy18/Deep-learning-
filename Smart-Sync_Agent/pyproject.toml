@@ -1,0 +1,18 @@
+[project]
+name = "smart-sync-agent"
+version = "0.1.0"
+description = "A terminal-based local markdown knowledge base and web clipper agent"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "typer>=0.12.0",
+    "rich>=13.0.0",
+    "pydantic>=2.0.0",
+    "langgraph>=0.1.0",
+    "langchain-mcp-adapters>=0.1.0",
+    "mcp>=0.1.0",
+    "httpx>=0.27.0"
+]
+
+[project.scripts]
+smart-sync = "cli:main"
