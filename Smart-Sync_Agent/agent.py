@@ -62,12 +62,17 @@ async def run_agent_workflow(user_input_text: str, gemini_key: str, root_dir: st
     final_agent_response = ""
 
 
-    async for event in graph_m.astream(graph_input, stream_mode="values", config=config):
-        last_msg = event["messages"][-1]
-        final_agent_response = last_msg.content
+    # Locate this section near the bottom of agent.py and update it:
+    try:
+        async for event in graph_m.astream(graph_input, stream_mode="values", config=config):
+            if "messages" in event and event["messages"]:
+                last_msg = event["messages"][-1]
+                final_agent_response = last_msg.content
+    except Exception as graph_err:
+        print(f"\n[LLM/Graph Execution Error]: {str(graph_err)}")
+        raise graph_err
 
     return final_agent_response
-
 
 # from IPython.display import Image, display
 # # Save the architecture diagram directly to your workspace
