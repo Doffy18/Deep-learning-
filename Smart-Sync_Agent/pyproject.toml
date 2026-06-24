@@ -16,3 +16,7 @@ dependencies = [
 
 [project.scripts]
 smart-sync = "cli:main"
+
+# 🟢 ADD THIS SECTION BELOW TO FIX THE BUILD ERROR
+[tool.setuptools]
+py-modules = ["cli", "agent", "mcp_server"]
