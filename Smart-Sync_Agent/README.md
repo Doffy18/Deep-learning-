@@ -1,4 +1,4 @@
-# Smart-Sync Knowledge Agent
+# Smart-Sync_Agent
 
 **An MCP-Enabled Interactive Workspace Environment**
 
