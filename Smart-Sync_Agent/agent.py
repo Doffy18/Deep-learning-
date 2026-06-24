@@ -2,6 +2,7 @@ import os
 from typing import Annotated
 from pydantic import BaseModel, Field
 import asyncio
+import sys
 
 # LangGraph & LangChain Imports
 from langgraph.graph import StateGraph, START, END
@@ -18,7 +19,7 @@ class State(BaseModel):
 async def run_agent_workflow(user_input_text: str, gemini_key: str, root_dir: str):
     client = MultiServerMCPClient({
         "cli_mcp": {
-            "command": "python",
+            "command": sys.executable,
             "args": ["mcp_server.py"],
             "transport": "stdio",
             "env": {
