@@ -13,14 +13,18 @@ from typing import Literal
 from langchain_mcp_adapters.client import MultiServerMCPClient
 
 
+
 class State(BaseModel):
     messages:Annotated[list,add_messages] = Field(default_factory=list)
 
 async def run_agent_workflow(user_input_text: str, gemini_key: str, root_dir: str):
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    mcp_server_path = os.path.join(current_dir, "mcp_server.py")
+    
     client = MultiServerMCPClient({
         "cli_mcp": {
             "command": sys.executable,
-            "args": ["mcp_server.py"],
+            "args": [mcp_server_path],
             "transport": "stdio",
             "env": {
                 **os.environ,                 # Keep your standard shell system paths
