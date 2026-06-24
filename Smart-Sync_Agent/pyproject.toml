@@ -26,4 +26,6 @@ dependencies = [
 smart-sync = "cli:main"
 
 [tool.hatch.build.targets.wheel]
-bypass-selection = true
+include = [
+    "/*.py"
+]
