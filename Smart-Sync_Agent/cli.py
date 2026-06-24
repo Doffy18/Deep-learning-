@@ -158,15 +158,18 @@ def main():
             console.print("\n[bold red]Session closed cleanly via break flag signal.[/bold red]\n")
             break
         except Exception as e:
-            # Check if this is a modern Python exception group or asyncio taskgroup error
-            if hasattr(e, "exceptions") and e.exceptions:
-                console.print(f"[bold red]System Runtime Exception error triggered (TaskGroup):[/bold red]")
-                for idx, sub_err in enumerate(e.exceptions, start=1):
-                    console.print(f"  [bold json_key]Sub-Exception #{idx}:[/bold json_key] {sub_err}")
-                    # If the nested exception has a traceback, you can print its type
-                    console.print(f"  [dim]Type: {type(sub_err).__name__}[/dim]\n")
-            else:
-                console.print(f"[bold red]System Runtime Exception error triggered:[/bold red] {e}\n")
+            def print_exception_deeply(err, depth=1):
+                # If it's an ExceptionGroup, dig into its sub-exceptions
+                if hasattr(err, "exceptions") and err.exceptions:
+                    for sub_err in err.exceptions:
+                        print_exception_deeply(sub_err, depth + 1)
+                else:
+                    # We reached the actual root cause!
+                    console.print(f"{'  ' * depth}[bold red]💥 Root Cause Exception:[/bold red] [yellow]{type(err).__name__}[/yellow]: {err}")
+
+            console.print(f"[bold red]System Runtime Exception error triggered (TaskGroup Stack):[/bold red]")
+            print_exception_deeply(e)
+            console.print("") # Blank line for spacing
 
 if __name__ == "__main__":
     app()
