@@ -21,6 +21,7 @@ dependencies = [
     "mcp==1.28.0",
     "httpx==0.28.1",
     "google-genai==2.10.0"
+    "langchain-google-genai>=2.0.0"  
 ]
 [project.scripts]
 smart-sync = "cli:main"
