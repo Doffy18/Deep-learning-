@@ -6,7 +6,6 @@ build-backend = "hatchling.build"
 name = "smart-sync-agent"
 version = "0.1.0"
 description = "A terminal-based local markdown knowledge base and web clipper agent"
-readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
     "typer==0.24.1",
