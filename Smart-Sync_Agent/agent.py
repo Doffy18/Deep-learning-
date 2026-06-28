@@ -37,7 +37,7 @@ async def run_agent_workflow(user_input_text: str, gemini_key: str, root_dir: st
         model_X_tools = model.bind_tools(langchain_tools)
 
         async def tool_calling_model(state: State):
-            await asyncio.sleep(20) # Maintained exact original execution latency target
+            # await asyncio.sleep(20) # Maintained exact original execution latency target, so free tier wont hit request limit per minute.
             return {"messages": [await model_X_tools.ainvoke(state.messages)]}
 
         def should_continue(state: State) -> Literal["tools", "__end__"]:
