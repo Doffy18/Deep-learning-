@@ -1,5 +1,5 @@
 import os
-import sys  # <--- MAKE SURE THIS IS IMPORTED
+import sys      
 from mcp.server.fastmcp import FastMCP
 from slack_sdk import WebClient
 import subprocess
@@ -15,7 +15,6 @@ mcp = FastMCP()
     )
 )
 def read_csv_data(filename: str) -> str:
-    # DYNAMICALLY RESOLVE ACTIVE CONTEXT
     active_dir = pathlib.Path(os.getcwd())
     path = active_dir / filename
     try:
@@ -42,11 +41,9 @@ def execute_analysis_code(script_content: str) -> str:
     active_dir = pathlib.Path(os.getcwd())
     sandbox_file = active_dir / 'analysis_script.py'
     try:
-        # Prepend a headless configuration so matplotlib doesn't throw GUI errors on users' machines
         headless_prefix = "import matplotlib\nmatplotlib.use('Agg')\n"
         sandbox_file.write_text(headless_prefix + script_content, encoding='utf-8')
         
-        # FIXED: Removed quotes around sys.executable to pass the variable, not the string!
         result = subprocess.run([sys.executable, sandbox_file], capture_output=True, text=True, timeout=30)
         return f"STDOUT EXECUTED:\n{result.stdout}\nSTDERR EXECUTED:\n{result.stderr}"
     except subprocess.TimeoutExpired:
@@ -70,7 +67,6 @@ def execute_analysis_code(script_content: str) -> str:
  ''')
 )
 def send_slack_report(message_text: str, plot_name: str = None) -> str:
-    # Resolve the shared configuration file location
     config_path = pathlib.Path.home() / ".mcp_analyst_config.json"
     
     if not config_path.exists():
