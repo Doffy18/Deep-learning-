@@ -9,8 +9,8 @@ from rich.status import Status
 
 from deep_agent import main as run_agent_workflow
 
-os.environ["GOOGLE_CLOUD_PROJECT"] = "local-sandbox-project"
-os.environ["GCP_PROJECT"] = "local-sandbox-project"
+# os.environ["GOOGLE_CLOUD_PROJECT"] = "local-sandbox-project"
+# os.environ["GCP_PROJECT"] = "local-sandbox-project"
 
 app = typer.Typer(help="MCP Autonomous Data Analyst Space Console Tool.")
 console = Console()
