@@ -5,7 +5,11 @@ import sys
 from langgraph.checkpoint.memory import InMemorySaver
 from langchain_core.utils.uuid import uuid7
 
-
+class DelayLLMCallback(AsyncCallbackHandler):
+    async def on_llm_start(self, serialized: dict, prompts: list, **kwargs) -> None:
+        """Runs every single time the agent decides to call the LLM model."""
+        await asyncio.sleep(20)
+        
 async def main(user_input_text: str):
     client = MultiServerMCPClient(
         {
@@ -27,7 +31,7 @@ async def main(user_input_text: str):
             )
 
     thread_id = str(uuid7())
-    config={"configurable": {"thread_id": thread_id}}
+    config={"configurable": {"thread_id": thread_id}, "callbacks": [DelayLLMCallback()]}
     input = {"messages": [{"role": "user", "content": user_input_text}]}
 
     try:
